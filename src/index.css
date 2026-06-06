@@ -1,0 +1,183 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 50% 3%;
+    --foreground: 0 0% 100%;
+    --card: 210 50% 3%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 50% 3%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 193 100% 50%;
+    --primary-foreground: 210 50% 3%;
+    --secondary: 204 30% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 204 30% 15%;
+    --muted-foreground: 215 16% 62%;
+    --accent: 163 100% 36%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 100% / 0.1;
+    --input: 0 0% 100% / 0.1;
+    --ring: 193 100% 50%;
+    --radius: 0.5rem;
+  }
+
+  html {
+    scroll-behavior: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #020b13;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: rgba(0, 212, 255, 0.3);
+    color: #ffffff;
+  }
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+  }
+
+  .gradient-border-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 1.2rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .gradient-border-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #00d4ff 0%, #00b894 50%, #a5f3fc 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: gradient-rotate 8s linear infinite;
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .gradient-border-card:hover::before {
+    opacity: 1;
+  }
+
+  .section-padding {
+    padding-top: 8vw;
+    padding-bottom: 8vw;
+  }
+
+  .container-main {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #00d4ff 0%, #00b894 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}
+
+/* Gradient border animation keyframes */
+@keyframes gradient-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020b13;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Performance optimization: content containment for offscreen sections */
+.section-deferred {
+  /* content-visibility: auto; */
+  /* contain-intrinsic-size: auto 650px; */
+}
+
+/* GPU-accelerated background animations for Hero Section */
+@keyframes blob-1-move {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(80px, 60px) scale(1.15); }
+  66% { transform: translate(-40px, 90px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes blob-2-move {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(-90px, -60px) scale(0.9); }
+  66% { transform: translate(60px, -110px) scale(1.1); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes blob-3-move {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(50px, -50px) scale(1.1); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob-1 {
+  animation: blob-1-move 20s infinite alternate ease-in-out;
+}
+
+.animate-blob-2 {
+  animation: blob-2-move 25s infinite alternate ease-in-out;
+}
+
+.animate-blob-3 {
+  animation: blob-3-move 18s infinite alternate ease-in-out;
+}
+
+
+@keyframes kenBurnsEffect {
+  0% {
+    transform: scale(1) translate(0px, 0px);
+  }
+  50% {
+    transform: scale(1.06) translate(-1% , -1%);
+  }
+  100% {
+    transform: scale(1.03) translate(1%, 0px);
+  }
+}

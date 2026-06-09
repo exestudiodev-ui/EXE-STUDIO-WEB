@@ -50,6 +50,7 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 1rem;
   }
 
@@ -58,6 +59,8 @@
     background: rgba(255, 255, 255, 0.05);
     border-radius: 1.2rem;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    isolation: isolate;
   }
 
   .gradient-border-card::before {
@@ -71,6 +74,7 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: gradient-rotate 8s linear infinite;
+    will-change: transform;
     opacity: 0.6;
     transition: opacity 0.3s ease;
   }
@@ -106,78 +110,116 @@
   }
 }
 
-/* Gradient border animation keyframes */
+/* ─── Gradient border animation ─────────────────────────────────────────── */
 @keyframes gradient-rotate {
-  0% { transform: rotate(0deg); }
+  0%   { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
+/* ─── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #020b13; }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 212, 255, 0.5); }
 
-::-webkit-scrollbar-track {
-  background: #020b13;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 212, 255, 0.3);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 212, 255, 0.5);
-}
-
-/* Performance optimization: content containment for offscreen sections */
+/* ─── Content visibility: skip paint of offscreen sections ───────────────
+   The browser defers layout/paint of below-the-fold content until it
+   approaches the viewport. This is the biggest single win for mobile FCP.  */
 .section-deferred {
-  /* content-visibility: auto; */
-  /* contain-intrinsic-size: auto 650px; */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 650px;
 }
 
-/* GPU-accelerated background animations for Hero Section */
+/* ─── Hero blob animations ───────────────────────────────────────────────── */
 @keyframes blob-1-move {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(80px, 60px) scale(1.15); }
-  66% { transform: translate(-40px, 90px) scale(0.9); }
+  0%   { transform: translate(0px, 0px) scale(1); }
+  33%  { transform: translate(80px, 60px) scale(1.15); }
+  66%  { transform: translate(-40px, 90px) scale(0.9); }
   100% { transform: translate(0px, 0px) scale(1); }
 }
-
 @keyframes blob-2-move {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(-90px, -60px) scale(0.9); }
-  66% { transform: translate(60px, -110px) scale(1.1); }
+  0%   { transform: translate(0px, 0px) scale(1); }
+  33%  { transform: translate(-90px, -60px) scale(0.9); }
+  66%  { transform: translate(60px, -110px) scale(1.1); }
   100% { transform: translate(0px, 0px) scale(1); }
 }
-
 @keyframes blob-3-move {
-  0% { transform: translate(0px, 0px) scale(1); }
-  50% { transform: translate(50px, -50px) scale(1.1); }
+  0%   { transform: translate(0px, 0px) scale(1); }
+  50%  { transform: translate(50px, -50px) scale(1.1); }
   100% { transform: translate(0px, 0px) scale(1); }
 }
 
-.animate-blob-1 {
-  animation: blob-1-move 20s infinite alternate ease-in-out;
-}
+.animate-blob-1 { animation: blob-1-move 20s infinite alternate ease-in-out; will-change: transform; }
+.animate-blob-2 { animation: blob-2-move 25s infinite alternate ease-in-out; will-change: transform; }
+.animate-blob-3 { animation: blob-3-move 18s infinite alternate ease-in-out; will-change: transform; }
 
-.animate-blob-2 {
-  animation: blob-2-move 25s infinite alternate ease-in-out;
-}
-
-.animate-blob-3 {
-  animation: blob-3-move 18s infinite alternate ease-in-out;
-}
-
-
+/* ─── Ken Burns effect ───────────────────────────────────────────────────── */
 @keyframes kenBurnsEffect {
-  0% {
-    transform: scale(1) translate(0px, 0px);
+  0%   { transform: scale(1) translate(0px, 0px); }
+  50%  { transform: scale(1.06) translate(-1%, -1%); }
+  100% { transform: scale(1.03) translate(1%, 0px); }
+}
+
+/* ─── Fade-in utility ────────────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Mobile performance overrides (< 768px) ─────────────────────────────
+   On throttled mobile CPUs, blur() + mix-blend-mode + conic-gradient
+   animations cause serious compositing overhead. We disable/simplify them. */
+@media (max-width: 767px) {
+  /* Disable Ken Burns — saves 2 GPU compositing layers */
+  .section-kenburns {
+    animation: none !important;
+    will-change: auto !important;
+    transform: none !important;
   }
-  50% {
-    transform: scale(1.06) translate(-1% , -1%);
+
+  /* Simplify blobs: less blur, slower animation, no screen blend */
+  .animate-blob-1,
+  .animate-blob-2 {
+    animation-duration: 35s;
+    filter: blur(40px) !important; /* reduced from 80px */
+    mix-blend-mode: normal !important; /* remove screen blend */
+    opacity: 0.07 !important;
   }
-  100% {
-    transform: scale(1.03) translate(1%, 0px);
+
+  /* Hide 3rd blob — least visible, most expensive */
+  .animate-blob-3 {
+    display: none;
+  }
+
+  /* Disable spinning conic gradient (TechnologiesSection) */
+  .tech-conic-gradient {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  /* Disable gradient-border rotation — saves a compositing layer */
+  .gradient-border-card::before {
+    animation: none;
+    will-change: auto;
+  }
+
+  /* Reduce backdrop-filter intensity (expensive on mobile GPUs) */
+  .glass-card {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* ─── Respect user OS reduced-motion preference ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob-1,
+  .animate-blob-2,
+  .animate-blob-3,
+  .section-kenburns,
+  .tech-conic-gradient,
+  .gradient-border-card::before {
+    animation: none !important;
+    will-change: auto !important;
+    transform: none !important;
   }
 }

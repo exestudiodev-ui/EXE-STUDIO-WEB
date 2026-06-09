@@ -1,12 +1,19 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
-import { inspectAttr } from 'kimi-plugin-inspect-react'
+import { inspectAttr } from "kimi-plugin-inspect-react"
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
-  plugins: [inspectAttr(), react()],
+  plugins: [
+    react(),
+    // kimi-plugin-inspect-react is a dev-only tool — never include in production
+    ...(mode === 'development'
+      ? [inspectAttr()]
+      : []
+    ),
+  ],
   server: {
     port: 3000,
   },
@@ -16,28 +23,28 @@ export default defineConfig({
     },
   },
   build: {
-    // Silence the 500kB warning — we are manually chunking below
     chunkSizeWarningLimit: 600,
+    // Minification settings
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (!id.includes('node_modules/')) return; // app code stays in index
-          // Animation libraries — truly independent, load in parallel
+          if (!id.includes('node_modules/')) return; // app code → per-section chunks via React.lazy
+
+          // Animation libraries — independent, parallel-loadable
           if (id.includes('node_modules/gsap/') || id.includes('node_modules/framer-motion/')) {
             return 'vendor-animation';
           }
-          // Radix UI — large, independent, load in parallel
+
+          // Radix UI primitives (only sheet + dropdown-menu + popover remain)
           if (id.includes('node_modules/@radix-ui/')) {
             return 'vendor-radix';
           }
-          // Charts — only loaded on demand, isolate for future lazy loading
-          if (id.includes('node_modules/recharts/') || id.includes('node_modules/d3')) {
-            return 'vendor-charts';
-          }
-          // React core + everything else that may depend on it (avoids circular refs)
+
+          // React core — keep together to avoid circular ref issues
           return 'vendor-react';
         },
       },
     },
   },
-});
+}));

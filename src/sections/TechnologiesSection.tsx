@@ -143,7 +143,7 @@ export function TechnologiesSection() {
                 className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-30 group-hover:opacity-50 transition-opacity duration-500`}
               />
               <div
-                className="absolute inset-0 opacity-20"
+                className="tech-conic-gradient absolute inset-0 opacity-20"
                 style={{
                   background: `conic-gradient(from 0deg at 50% 50%, #00d4ff 0deg, #00b894 ${
                     90 + index * 30
@@ -179,12 +179,6 @@ export function TechnologiesSection() {
         </div>
       </div>
 
-      <style>{`
-        @keyframes gradient-rotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </section>
   );
 }

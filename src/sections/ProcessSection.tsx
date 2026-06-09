@@ -92,7 +92,7 @@ export function ProcessSection() {
       {/* 2. CAPA INDEPENDIENTE DE IMAGEN ANIMADA Y OSCURECIDA */}
             {/* CAPA DE IMAGEN CON DESENFOQUE Y UN COLAZO DE OSCURIDAD EQUILIBRADO */}
       <div 
-        className="absolute inset-0 bg-[url('/assets/f11.webp')] bg-cover bg-center bg-no-repeat brightness-50 contrast-100 blur-[2px] pointer-events-none"
+        className="section-kenburns absolute inset-0 bg-[url('/assets/f11.webp')] bg-cover bg-center bg-no-repeat brightness-50 contrast-100 blur-[2px] pointer-events-none"
         style={{ 
           animation: 'kenBurnsEffect 25s infinite alternate ease-in-out',
           willChange: 'transform'

@@ -177,12 +177,7 @@ export function HeroSection() {
         </svg>
       </div>
 
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-      `}</style>
+
     </section>
   );
 }

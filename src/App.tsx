@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-import { QuoteModal } from '@/components/QuoteModal';
 import { FloatingNavigationButton } from '@/components/FloatingNavigationButton';
 import { Toaster } from '@/components/ui/sonner';
 import IntroVideo from '@/components/IntroVideo';
@@ -13,14 +10,20 @@ import {
   useNavigationStore,
 } from '@/store/navigationStore';
 import { HeroSection } from '@/sections/HeroSection';
-import { ServicesSection } from '@/sections/ServicesSection';
-import { TechnologiesSection } from '@/sections/TechnologiesSection';
-import { ProcessSection } from '@/sections/ProcessSection';
-import { ProjectsSection } from '@/sections/ProjectsSection';
-import { QuoteEngineSection } from '@/sections/QuoteEngineSection';
-import { ContactSection } from '@/sections/ContactSection';
 
-gsap.registerPlugin(ScrollTrigger);
+// Below-the-fold sections: loaded lazily so they don't block initial paint
+const ServicesSection    = lazy(() => import('@/sections/ServicesSection').then(m => ({ default: m.ServicesSection })));
+const TechnologiesSection = lazy(() => import('@/sections/TechnologiesSection').then(m => ({ default: m.TechnologiesSection })));
+const ProcessSection     = lazy(() => import('@/sections/ProcessSection').then(m => ({ default: m.ProcessSection })));
+const ProjectsSection    = lazy(() => import('@/sections/ProjectsSection').then(m => ({ default: m.ProjectsSection })));
+const QuoteEngineSection = lazy(() => import('@/sections/QuoteEngineSection').then(m => ({ default: m.QuoteEngineSection })));
+const ContactSection     = lazy(() => import('@/sections/ContactSection').then(m => ({ default: m.ContactSection })));
+
+// Modal: only needed when the user opens it
+const QuoteModal = lazy(() => import('@/components/QuoteModal').then(m => ({ default: m.QuoteModal })));
+
+// Invisible fallback — sections use content-visibility:auto so height is reserved
+const SectionFallback = () => <div style={{ minHeight: '650px' }} aria-hidden="true" />;
 
 function App() {
   const [showIntro, setShowIntro] = useState(true);
@@ -73,29 +76,43 @@ function App() {
         <main>
           <HeroSection />
           <div className="section-deferred">
-            <ServicesSection />
+            <Suspense fallback={<SectionFallback />}>
+              <ServicesSection />
+            </Suspense>
           </div>
           <div className="section-deferred">
-            <TechnologiesSection />
+            <Suspense fallback={<SectionFallback />}>
+              <TechnologiesSection />
+            </Suspense>
           </div>
           <div className="section-deferred">
-            <ProcessSection />
+            <Suspense fallback={<SectionFallback />}>
+              <ProcessSection />
+            </Suspense>
           </div>
           <div className="section-deferred">
-            <ProjectsSection />
+            <Suspense fallback={<SectionFallback />}>
+              <ProjectsSection />
+            </Suspense>
           </div>
           <div className="section-deferred">
-            <QuoteEngineSection />
+            <Suspense fallback={<SectionFallback />}>
+              <QuoteEngineSection />
+            </Suspense>
           </div>
           <div className="section-deferred">
-            <ContactSection />
+            <Suspense fallback={<SectionFallback />}>
+              <ContactSection />
+            </Suspense>
           </div>
         </main>
 
         <Footer />
       </div>
 
-      <QuoteModal />
+      <Suspense fallback={null}>
+        <QuoteModal />
+      </Suspense>
       <Toaster />
     </div>
   );

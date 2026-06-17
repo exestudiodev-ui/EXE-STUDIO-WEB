@@ -143,7 +143,7 @@ export function ServicesSection() {
       
       {/* 2. CAPA DE IMAGEN CON DESENFOQUE, MOVIMIENTO EQUILIBRADO Y MÁS DETALLE */}
       <div 
-        className="absolute inset-0 bg-[url('/assets/f12.webp')] bg-cover bg-center bg-no-repeat brightness-50 contrast-100 blur-[2px] pointer-events-none"
+        className="section-kenburns absolute inset-0 bg-[url('/assets/f12.webp')] bg-cover bg-center bg-no-repeat brightness-50 contrast-100 blur-[2px] pointer-events-none"
         style={{ 
           animation: 'kenBurnsEffect 25s infinite alternate ease-in-out',
           willChange: 'transform'
